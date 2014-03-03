@@ -1,5 +1,17 @@
 package com.wangzhenzhe.artdaily;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import ru.truba.touchgallery.GalleryWidget.BasePagerAdapter.OnItemChangeListener;
+import ru.truba.touchgallery.GalleryWidget.FilePagerAdapter;
+import ru.truba.touchgallery.GalleryWidget.GalleryViewPager;
+
 import com.wangzhenzhe.artdaily.util.SystemUiHider;
 
 import android.annotation.TargetApi;
@@ -9,6 +21,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -44,7 +57,9 @@ public class MainscreenActivity extends Activity {
      * The instance of the {@link SystemUiHider} for this activity.
      */
     private SystemUiHider mSystemUiHider;
-
+    
+    private GalleryViewPager mViewPager;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,11 +67,11 @@ public class MainscreenActivity extends Activity {
         setContentView(R.layout.activity_mainscreen);
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
-        final View contentView = findViewById(R.id.fullscreen_content);
-
+        mViewPager = (GalleryViewPager)findViewById(R.id.viewer);
+        
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
-        mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
+        mSystemUiHider = SystemUiHider.getInstance(this, mViewPager, HIDER_FLAGS);
         mSystemUiHider.setup();
         mSystemUiHider
                 .setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
@@ -97,7 +112,7 @@ public class MainscreenActivity extends Activity {
                 });
 
         // Set up the user interaction to manually show or hide the system UI.
-        contentView.setOnClickListener(new View.OnClickListener() {
+        mViewPager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (TOGGLE_ON_CLICK) {
@@ -112,6 +127,53 @@ public class MainscreenActivity extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        
+        String[] urls = null;
+        List<String> items = new ArrayList<String>();
+		try {
+			urls = getAssets().list("");
+	
+	        for (String filename : urls) 
+	        {
+	        	if (filename.matches(".+\\.jpg")) 
+	        	{
+	        		String path = getFilesDir() + "/" + filename;
+	        		copy(getAssets().open(filename), new File(path) );
+	        		items.add(path);
+	        	}
+	        }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+        FilePagerAdapter pagerAdapter = new FilePagerAdapter(this, items);
+        pagerAdapter.setOnItemChangeListener(new OnItemChangeListener()
+		{
+			@Override
+			public void onItemChange(int currentPosition)
+			{
+				Toast.makeText(MainscreenActivity.this, "Current item is " + currentPosition, Toast.LENGTH_SHORT).show();
+			}
+		});
+        
+        
+        mViewPager.setOffscreenPageLimit(3);
+        mViewPager.setAdapter(pagerAdapter);
+
+    }
+    
+    public void copy(InputStream in, File dst) throws IOException {
+
+        OutputStream out = new FileOutputStream(dst);
+
+        // Transfer bytes from in to out
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) > 0) {
+            out.write(buf, 0, len);
+        }
+        in.close();
+        out.close();
     }
 
     @Override
