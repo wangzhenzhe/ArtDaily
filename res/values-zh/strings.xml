@@ -3,5 +3,7 @@
     <string name="app_name">每日艺术精选</string>
     <string name="dummy_button">空按钮</string>
     <string name="dummy_content">空</string>
+    <string name="app_exit_button">退出</string>
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
 
 </resources>

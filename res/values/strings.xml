@@ -4,5 +4,7 @@
     <string name="app_name">ArtDaily</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="app_exit_button">Exit</string>
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
 
 </resources>

@@ -21,6 +21,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.Toast;
 
 /**
@@ -160,6 +162,13 @@ public class MainscreenActivity extends Activity {
         mViewPager.setOffscreenPageLimit(3);
         mViewPager.setAdapter(pagerAdapter);
 
+        Button mExitBtn = (Button)findViewById(R.id.dummy_button);
+        mExitBtn.setOnClickListener(new OnClickListener (){
+        	public void onClick(View v){
+        		System.exit(0);
+        	}
+        });
+        
     }
     
     public void copy(InputStream in, File dst) throws IOException {
@@ -218,4 +227,6 @@ public class MainscreenActivity extends Activity {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
+    
+    
 }
