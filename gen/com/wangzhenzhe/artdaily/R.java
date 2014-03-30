@@ -19,7 +19,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int buttonBarStyle=0x7f010000;
     }
     public static final class color {
-        public static final int black_overlay=0x7f050000;
+        public static final int black_overlay=0x7f040000;
     }
     public static final class drawable {
         public static final int ic_launcher=0x7f020000;
@@ -34,14 +34,13 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     public static final class layout {
         public static final int activity_mainscreen=0x7f030000;
         public static final int activity_splash_screen=0x7f030001;
-        public static final int main=0x7f030002;
     }
     public static final class string {
-        public static final int app_exit_button=0x7f040003;
-        public static final int app_name=0x7f040000;
-        public static final int dummy_button=0x7f040001;
-        public static final int dummy_content=0x7f040002;
-        public static final int title_activity_splash_screen=0x7f040004;
+        public static final int app_exit_button=0x7f050003;
+        public static final int app_name=0x7f050000;
+        public static final int dummy_button=0x7f050001;
+        public static final int dummy_content=0x7f050002;
+        public static final int title_activity_splash_screen=0x7f050004;
     }
     public static final class style {
         /** 

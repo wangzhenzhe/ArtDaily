@@ -8,10 +8,12 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.truba.touchgallery.GalleryWidget.BasePagerAdapter.OnItemChangeListener;
-import ru.truba.touchgallery.GalleryWidget.FilePagerAdapter;
-import ru.truba.touchgallery.GalleryWidget.GalleryViewPager;
+import com.wangzhenzhe.library.GalleryWidget.BasePagerAdapter.OnItemChangeListener;
+import com.wangzhenzhe.library.GalleryWidget.DBPagerAdapter;
+import com.wangzhenzhe.library.GalleryWidget.FilePagerAdapter;
+import com.wangzhenzhe.library.GalleryWidget.GalleryViewPager;
 
+import com.wangzhenzhe.artdaily.sqlite.ArtDailyDB;
 import com.wangzhenzhe.artdaily.util.SystemUiHider;
 
 import android.annotation.TargetApi;
@@ -130,9 +132,10 @@ public class MainscreenActivity extends Activity {
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
         
+        
+        ArtDailyDB db = new ArtDailyDB(this);
         String[] urls = null;
-        List<String> items = new ArrayList<String>();
-		try {
+        try {
 			urls = getAssets().list("");
 	
 	        for (String filename : urls) 
@@ -141,14 +144,22 @@ public class MainscreenActivity extends Activity {
 	        	{
 	        		String path = getFilesDir() + "/" + filename;
 	        		copy(getAssets().open(filename), new File(path) );
-	        		items.add(path);
+	        		db.addArtImage(path);
 	        	}
 	        }
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-        FilePagerAdapter pagerAdapter = new FilePagerAdapter(this, items);
+        
+        List<String> items = null;
+		try {
+			items = db.loadArtImageIDs();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+        DBPagerAdapter pagerAdapter = new DBPagerAdapter(this, items, db);
         pagerAdapter.setOnItemChangeListener(new OnItemChangeListener()
 		{
 			@Override

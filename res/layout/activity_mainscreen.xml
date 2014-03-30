@@ -11,7 +11,7 @@
          TextureView, etc.
     -->
 
-    <ru.truba.touchgallery.GalleryWidget.GalleryViewPager
+    <com.wangzhenzhe.library.GalleryWidget.GalleryViewPager
             android:id="@+id/viewer"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
