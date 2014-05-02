@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.wangzhenzhe.library.TouchView.InputStreamWrapper;
-import com.wangzhenzhe.library.TouchView.InputStreamWrapper.InputStreamProgressListener;
-
 import android.content.ContentValues;
 import android.content.Context;
 
@@ -108,6 +106,21 @@ public class ArtDailyDB {
         }
     }
     
+    public int getArtImageCount()
+    {
+    	int count = 0;
+    	
+    	String[] columns = {"_id", "name"};
+    	Cursor c = db.query("ARTIMAGE", columns, null, null, null, null, null);
+    	
+    	while(c.moveToNext())
+ 	   {
+ 		   count++;
+ 	   }
+        c.close();
+        return count;
+    }
+    
     public Bitmap loadArtImage(String sID)
     {
     	Bitmap bmp = null;
@@ -150,6 +163,22 @@ public class ArtDailyDB {
         return bos.toByteArray();  
     }
    
+public static byte[] bmpToByteArray(final Bitmap bmp, final boolean needRecycle) {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		bmp.compress(Bitmap.CompressFormat.PNG, 100, output);
+		if (needRecycle) {
+			bmp.recycle();
+		}
+		
+		byte[] result = output.toByteArray();
+		try {
+			output.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
    // Cursor to bitmap  
    public Bitmap cursorToBmp(Cursor c, int columnIndex) {  
  
@@ -161,5 +190,8 @@ public class ArtDailyDB {
        }  
    }  
    
-   
+   public void close()
+   {
+	   db.close();
+   }
 }

@@ -18,14 +18,19 @@ import com.wangzhenzhe.artdaily.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.tencent.mm.sdk.openapi.*;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -38,7 +43,7 @@ public class MainscreenActivity extends Activity {
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
      */
-    private static final boolean AUTO_HIDE = true;
+    private static final boolean AUTO_HIDE = false;
 
     /**
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
@@ -64,10 +69,32 @@ public class MainscreenActivity extends Activity {
     
     private GalleryViewPager mViewPager;
     
+    private IWXAPI api;
+    
+    private static final String APP_ID = "wx2bf3c79c55ab8b9b";
+    
+    private String imageIdtoShare;
+    
+    private ArtDailyDB db;
+    
+    private static final int THUMB_SIZE = 96;
+    
+    protected void onDestory()
+    {
+    	super.onDestroy();
+    	db.close();
+    	
+    	api.unregisterApp();
+    }
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        api = WXAPIFactory.createWXAPI(this, APP_ID, true);
+        
+        api.registerApp(APP_ID);
+        
         setContentView(R.layout.activity_mainscreen);
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
@@ -75,7 +102,7 @@ public class MainscreenActivity extends Activity {
         
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
-        mSystemUiHider = SystemUiHider.getInstance(this, mViewPager, HIDER_FLAGS);
+        /*mSystemUiHider = SystemUiHider.getInstance(this, mViewPager, HIDER_FLAGS);
         mSystemUiHider.setup();
         mSystemUiHider
                 .setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
@@ -114,43 +141,34 @@ public class MainscreenActivity extends Activity {
                         }
                     }
                 });
-
-        // Set up the user interaction to manually show or hide the system UI.
-        mViewPager.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (TOGGLE_ON_CLICK) {
-                    mSystemUiHider.toggle();
-                } else {
-                    mSystemUiHider.show();
-                }
-            }
-        });
-
+*/
+        
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+//        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
         
         
-        ArtDailyDB db = new ArtDailyDB(this);
+        db = new ArtDailyDB(this);
         String[] urls = null;
-        try {
-			urls = getAssets().list("");
-	
-	        for (String filename : urls) 
-	        {
-	        	if (filename.matches(".+\\.jpg")) 
-	        	{
-	        		String path = getFilesDir() + "/" + filename;
-	        		copy(getAssets().open(filename), new File(path) );
-	        		db.addArtImage(path);
-	        	}
-	        }
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+        if (db.getArtImageCount() < 5)
+        {
+	        try {
+				urls = getAssets().list("");
+		
+		        for (String filename : urls) 
+		        {
+		        	if (filename.matches(".+\\.jpg")) 
+		        	{
+		        		String path = getFilesDir() + "/" + filename;
+		        		copy(getAssets().open(filename), new File(path) );
+		        		db.addArtImage(path);
+		        	}
+		        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+        }
         
         List<String> items = null;
 		try {
@@ -166,12 +184,21 @@ public class MainscreenActivity extends Activity {
 			public void onItemChange(int currentPosition)
 			{
 				Toast.makeText(MainscreenActivity.this, "Current item is " + currentPosition, Toast.LENGTH_SHORT).show();
+				List<String> items = null;
+				try {
+					items = db.loadArtImageIDs();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				imageIdtoShare = items.get(currentPosition);
 			}
 		});
         
         
         mViewPager.setOffscreenPageLimit(3);
         mViewPager.setAdapter(pagerAdapter);
+  //      mViewPager.setSystemUiHider(mSystemUiHider);
+        
 
         Button mExitBtn = (Button)findViewById(R.id.dummy_button);
         mExitBtn.setOnClickListener(new OnClickListener (){
@@ -180,7 +207,34 @@ public class MainscreenActivity extends Activity {
         	}
         });
         
+        Button mShareBtn = (Button)findViewById(R.id.weixin_button);
+        mShareBtn.setOnClickListener(new OnClickListener(){
+        	public void onClick(View v){
+        		Bitmap bmp = db.loadArtImage(imageIdtoShare);;
+				WXImageObject imgObj = new WXImageObject(bmp);
+				
+				WXMediaMessage msg = new WXMediaMessage();
+				msg.mediaObject = imgObj;
+				msg.title="–Ï¿œ ¶”Õª≠";
+				
+				Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, THUMB_SIZE, THUMB_SIZE, true);
+				msg.thumbData = ArtDailyDB.bmpToByteArray(thumbBmp, true);  //
+
+				SendMessageToWX.Req req = new SendMessageToWX.Req();
+				req.transaction = buildTransaction("img");
+				req.message = msg;
+				req.scene = SendMessageToWX.Req.WXSceneTimeline;
+				boolean sent = api.sendReq(req);
+				if (sent)
+					Log.d("MainscreenActivity", "Message is sent to Wechat");
+        	}
+        });
+        
     }
+    
+	private String buildTransaction(final String type) {
+		return (type == null) ? String.valueOf(System.currentTimeMillis()) : type + System.currentTimeMillis();
+	}
     
     public void copy(InputStream in, File dst) throws IOException {
 
@@ -203,7 +257,19 @@ public class MainscreenActivity extends Activity {
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
-        delayedHide(100);
+//        delayedHide(100);
+        
+        // Set up the user interaction to manually show or hide the system UI.
+/*        mViewPager.mCurrentView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (TOGGLE_ON_CLICK) {
+                    mSystemUiHider.toggle();
+                } else {
+                    mSystemUiHider.show();
+                }
+            }
+        });*/
     }
 
 
@@ -212,11 +278,13 @@ public class MainscreenActivity extends Activity {
      * system UI. This is to prevent the jarring behavior of controls going away
      * while interacting with activity UI.
      */
-    View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
+/*    View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             if (AUTO_HIDE) {
                 delayedHide(AUTO_HIDE_DELAY_MILLIS);
+            } else {
+            	mSystemUiHider.hide();
             }
             return false;
         }
@@ -229,15 +297,15 @@ public class MainscreenActivity extends Activity {
             mSystemUiHider.hide();
         }
     };
-
+*/
     /**
      * Schedules a call to hide() in [delay] milliseconds, canceling any
      * previously scheduled calls.
      */
-    private void delayedHide(int delayMillis) {
+/*    private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
-    
+  */  
     
 }

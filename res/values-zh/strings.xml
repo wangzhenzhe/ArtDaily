@@ -5,5 +5,7 @@
     <string name="dummy_content">空</string>
     <string name="app_exit_button">退出</string>
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="app_weixin_button">微信分享</string>
+    <string name="app_fav_button">收藏</string>
 
 </resources>

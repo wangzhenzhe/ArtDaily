@@ -37,12 +37,23 @@
             tools:ignore="UselessParent" >
 
             <Button
+                android:id="@+id/weixin_button"
+                style="?buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_weixin_button" />
+            <Button 
+                android:id="@+id/fav_button"
+                style="?buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_fav_button"/>
+            <Button 
                 android:id="@+id/dummy_button"
                 style="?buttonBarButtonStyle"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/app_exit_button" />
+                android:text="@string/app_exit_button"/>
         </LinearLayout>
     </FrameLayout>
 

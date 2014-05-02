@@ -6,5 +6,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="app_exit_button">Exit</string>
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="app_weixin_button">Weixin Share</string>
+    <string name="app_fav_button">Favorites</string>
 
 </resources>

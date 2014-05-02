@@ -27,9 +27,11 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int splash=0x7f020002;
     }
     public static final class id {
-        public static final int dummy_button=0x7f070002;
+        public static final int dummy_button=0x7f070004;
+        public static final int fav_button=0x7f070003;
         public static final int fullscreen_content_controls=0x7f070001;
         public static final int viewer=0x7f070000;
+        public static final int weixin_button=0x7f070002;
     }
     public static final class layout {
         public static final int activity_mainscreen=0x7f030000;
@@ -37,7 +39,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     }
     public static final class string {
         public static final int app_exit_button=0x7f050003;
+        public static final int app_fav_button=0x7f050006;
         public static final int app_name=0x7f050000;
+        public static final int app_weixin_button=0x7f050005;
         public static final int dummy_button=0x7f050001;
         public static final int dummy_content=0x7f050002;
         public static final int title_activity_splash_screen=0x7f050004;

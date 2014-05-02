@@ -32,6 +32,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.FloatMath;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -402,7 +403,7 @@ public class TouchImageView extends ImageView {
         calcPadding();
         setImageMatrix(matrix);
     }
-
+    
     private double distanceBetween(PointF left, PointF right)
     {
         return Math.sqrt(Math.pow(left.x - right.x, 2) + Math.pow(left.y - right.y, 2));

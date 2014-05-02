@@ -21,7 +21,10 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
+
+import com.wangzhenzhe.artdaily.util.SystemUiHider;
 import com.wangzhenzhe.library.TouchView.TouchImageView;
 
 /**
@@ -30,12 +33,20 @@ import com.wangzhenzhe.library.TouchView.TouchImageView;
 public class GalleryViewPager extends ViewPager {
     PointF last;
     public TouchImageView mCurrentView;
+    private SystemUiHider mUihider;
+    
     public GalleryViewPager(Context context) {
         super(context);
     }
     public GalleryViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
+    
+    public void setSystemUiHider(SystemUiHider uihider){
+        mUihider = uihider;
+    }
+    
+    
     private float[] handleMotionEvent(MotionEvent event)
     {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
@@ -52,6 +63,8 @@ public class GalleryViewPager extends ViewPager {
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+    	
+    	
         if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP)
         {
             super.onTouchEvent(event);
@@ -82,6 +95,7 @@ public class GalleryViewPager extends ViewPager {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
+    	
         if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP)
         {
             super.onInterceptTouchEvent(event);
@@ -108,4 +122,5 @@ public class GalleryViewPager extends ViewPager {
         }
         return false;
     }
+    
 }
